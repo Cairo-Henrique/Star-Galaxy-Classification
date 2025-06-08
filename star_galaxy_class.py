@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from pathlib import Path
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 # Caminho da pasta
 galaxy = Path(r'C:\Users\Cairo Henrique\Downloads\archive\Cutout Files\galaxy')
@@ -43,4 +44,17 @@ def show(nome_imagem):
     plt.title(nome_imagem)
     plt.show()
 
-show('IC3521-H01_1419_1705_6.jpg')
+#show('IC3521-H01_1419_1705_6.jpg')
+
+# Separar features (x) e rótulos (y)
+X = df['nome_imagem'] 
+y = df['classe']
+
+# Dividir os dados (exemplo com 80% treino e 20% teste)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# Ver quantas imagens há em cada conjunto
+print(f'Treinamento: {len(X_train)} imagens')
+print(f'Teste: {len(X_test)} imagens')
