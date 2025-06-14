@@ -1,12 +1,16 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import numpy as np
 from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-# Caminho da pasta
-galaxy = Path(r'C:\Users\Cairo Henrique\Downloads\archive\Cutout Files\galaxy')
-star = Path(r'C:\Users\Cairo Henrique\Downloads\archive\Cutout Files\star')
+# Caminho para a pasta raiz do projeto (onde o script está)
+base_dir = Path(__file__).resolve().parent
+
+# Caminhos para as imagens, relativos à pasta do scstar.
+galaxy = base_dir / 'archive' / 'Cutout Files' / 'galaxy'
+star = base_dir / 'archive' / 'Cutout Files' / 'star'
 
 # Lista apenas os arquivos (não diretórios)
 nomes_galaxy = [f.name for f in galaxy.iterdir() if f.is_file()]
@@ -54,6 +58,10 @@ y = df['classe']
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
+
+# Criar arrays
+x = np.array(df['nome_imagem'])
+y = np.array(df['classe'])
 
 # Ver quantas imagens há em cada conjunto
 print(f'Treinamento: {len(X_train)} imagens')
