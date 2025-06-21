@@ -59,6 +59,8 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
+X_test_copy = X_test # Manter uma cópia dos nomes das imagens de teste
+
 # Ver quantas imagens há em cada conjunto
 print(f'Treinamento: {len(X_train)} imagens')
 print(f'Teste: {len(X_test)} imagens')
@@ -81,7 +83,7 @@ X_train = np.array([vetorizar(nome) for nome in X_train])
 X_test = np.array([vetorizar(nome) for nome in X_test])
 
 # Treinar modelos de classificação
-from sklearn.svm import SVC                      # Suporte Vetorial (SVM)
+from sklearn.svm import SVC                      # Support Vector Machine (SVM)
 from sklearn.neural_network import MLPClassifier  # Multi-Layer Perceptron
 from sklearn.ensemble import RandomForestClassifier  # Random Forest
 from sklearn.metrics import accuracy_score, classification_report
@@ -93,7 +95,7 @@ for modelo in modelos:
     modelo.fit(X_train, y_train)
     y_pred = modelo.predict(X_test)
     # Métricas
-    print("Acurácia:", accuracy_score(y_test, y_pred))
+    print("Acurácia:", accuracy_score(y_test, y_pred)*100, "%")
     print("Relatório de Classificação:\n", classification_report(y_test, y_pred))
 
 # Salvar o modelo treinado
@@ -105,6 +107,23 @@ def salvar_modelo(modelo, nome_arquivo):
     joblib.dump(modelo, caminho)
     print(f"Modelo salvo em: {caminho}")
 
-#for modelo in modelos:
-#    nome_arquivo = f"{modelo.__class__.__name__.lower()}.joblib"
-#    salvar_modelo(modelo, nome_arquivo)
+for modelo in modelos:
+    nome_arquivo = f"{modelo.__class__.__name__.lower()}.joblib"
+    salvar_modelo(modelo, nome_arquivo)
+
+# Carregar o modelo salvo
+def carregar_modelo(nome_arquivo):
+    caminho = base_dir / nome_arquivo
+    modelo = joblib.load(caminho)
+    print(f"Modelo carregado de: {caminho}")
+    return modelo
+
+# Exemplo de uso do SVC carregado
+modelo_carregado = carregar_modelo('svc.joblib')
+# Exibir a classe da imagem de teste
+print("Classe da imagem de teste:", y_test[0])
+# Exibir a previsão do modelo carregado
+y_pred = modelo_carregado.predict([vetorizar(X_test_copy[0])])
+print("Previsão do modelo carregado:", y_pred[0])
+# Exibir uma imagem de teste
+show(X_test_copy[0])
