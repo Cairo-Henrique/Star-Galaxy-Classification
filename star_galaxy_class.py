@@ -32,9 +32,9 @@ df.to_csv('star_galaxy_class.csv', index=False)
 def show(nome_imagem):
     # Caminho para a imagem
     if nome_imagem in nomes_galaxy:
-        image_path = Path(r'C:\Users\Cairo Henrique\Downloads\archive\Cutout Files\galaxy') / nome_imagem
+        image_path = base_dir / 'archive' / 'Cutout Files' / 'galaxy' / nome_imagem
     elif nome_imagem in nomes_star:
-        image_path = Path(r'C:\Users\Cairo Henrique\Downloads\archive\Cutout Files\star') / nome_imagem
+        image_path = base_dir / 'archive' / 'Cutout Files' / 'star' / nome_imagem
     else:
         print(f"Imagem {nome_imagem} não encontrada.")
         return
@@ -50,19 +50,61 @@ def show(nome_imagem):
 
 #show('IC3521-H01_1419_1705_6.jpg')
 
-# Separar features (x) e rótulos (y)
-X = df['nome_imagem'] 
-y = df['classe']
+# Criar arrays
+X = np.array(df['nome_imagem'])
+y = np.array(df['classe'])
 
 # Dividir os dados (exemplo com 80% treino e 20% teste)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
-# Criar arrays
-x = np.array(df['nome_imagem'])
-y = np.array(df['classe'])
-
 # Ver quantas imagens há em cada conjunto
 print(f'Treinamento: {len(X_train)} imagens')
 print(f'Teste: {len(X_test)} imagens')
+
+# Converter imagens para vetores de 64 pixels
+from PIL import Image
+
+# Função para vetorizar a imagem
+def vetorizar(nome_imagem):
+    if nome_imagem in nomes_galaxy:
+        caminho = galaxy / nome_imagem
+    else:
+        caminho = star / nome_imagem
+    img = Image.open(caminho).convert('L')  # tons de cinza
+    img = img.resize((8, 8))
+    return np.array(img).flatten() / 255.0
+
+# Vetorizar as imagens de treino e teste
+X_train = np.array([vetorizar(nome) for nome in X_train])
+X_test = np.array([vetorizar(nome) for nome in X_test])
+
+# Treinar modelos de classificação
+from sklearn.svm import SVC                      # Suporte Vetorial (SVM)
+from sklearn.neural_network import MLPClassifier  # Multi-Layer Perceptron
+from sklearn.ensemble import RandomForestClassifier  # Random Forest
+from sklearn.metrics import accuracy_score, classification_report
+
+modelos = [SVC(), MLPClassifier(), RandomForestClassifier()]
+
+for modelo in modelos:
+    print(f"Treinando modelo: {modelo.__class__.__name__}")
+    modelo.fit(X_train, y_train)
+    y_pred = modelo.predict(X_test)
+    # Métricas
+    print("Acurácia:", accuracy_score(y_test, y_pred))
+    print("Relatório de Classificação:\n", classification_report(y_test, y_pred))
+
+# Salvar o modelo treinado
+
+import joblib
+
+def salvar_modelo(modelo, nome_arquivo):
+    caminho = base_dir / nome_arquivo
+    joblib.dump(modelo, caminho)
+    print(f"Modelo salvo em: {caminho}")
+
+#for modelo in modelos:
+#    nome_arquivo = f"{modelo.__class__.__name__.lower()}.joblib"
+#    salvar_modelo(modelo, nome_arquivo)
