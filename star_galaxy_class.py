@@ -75,8 +75,10 @@ def vetorizar(nome_imagem):
     else:
         caminho = star / nome_imagem
     img = Image.open(caminho).convert('L')  # tons de cinza
-    img = img.resize((8, 8))
-    return np.array(img).flatten() / 255.0
+    img = img.resize((8, 8)) # Redimensiona para 8x8 pixels
+    img = np.array(img)
+    img = np.append(img, np.mean(img))  # Adiciona a média dos pixels como um recurso extra
+    return img.flatten() / 255.0
 
 # Vetorizar as imagens de treino e teste
 X_train = np.array([vetorizar(nome) for nome in X_train])
@@ -86,6 +88,7 @@ X_test = np.array([vetorizar(nome) for nome in X_test])
 from sklearn.svm import SVC                      # Support Vector Machine (SVM)
 from sklearn.neural_network import MLPClassifier  # Multi-Layer Perceptron
 from sklearn.ensemble import RandomForestClassifier  # Random Forest
+
 from sklearn.metrics import accuracy_score, classification_report
 
 modelos = [SVC(), MLPClassifier(), RandomForestClassifier()]
