@@ -41,6 +41,7 @@ The SVC, MLP, and Random Forest models failed to effectively extract discriminat
 
 ### CNN
 Accuracy: 90%
+
 F1 Score: 80%
 
 The convolutional layers were able to capture the relevant spatial features directly from the images, leading to a significant performance improvement—especially after applying data augmentation.
