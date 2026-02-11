@@ -1,6 +1,6 @@
 # Star-Galaxy-Classification
 
-This project aims to classify astronomical images as either stars or galaxies using a Convolutional Neural Network (CNN) implemented in PyTorch, as well as some other models for comparition.
+This project aims to classify astronomical images as either stars or galaxies using a Convolutional Neural Network (CNN) implemented in PyTorch, as well as some other models for comparision.
 
 ## Project Description
 
@@ -34,4 +34,14 @@ The project requires the following libraries:
 
 ## Results
 
+### Other models
+Accuracy: ~77% 
+
+The SVC, MLP, and Random Forest models failed to effectively extract discriminative information from the engineered features. The extremely low F1-scores for the galaxy class indicate that these models were strongly biased toward predicting the majority class (star), effectively classifying most samples as stars. This behavior is consistent with the class imbalance present in the dataset.
+
+### CNN
 Accuracy: 90%
+F1 Score: 80%
+
+The convolutional layers were able to capture the relevant spatial features directly from the images, leading to a significant performance improvement—especially after applying data augmentation.
+An analysis of the misclassified samples shows that the model struggles mainly with images containing more than one celestial object. This limitation is expected, as such cases represent a small fraction of the dataset and are therefore underrepresented during training.
